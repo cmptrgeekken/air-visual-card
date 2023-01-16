@@ -260,7 +260,14 @@ class AirVisualCard extends HTMLElement {
       const mainPollutantSensor = { name: 'mainPollutantSensor', config: config.main_pollutant || null, value: 0 };
       const sensorList = [aqiSensor, aplSensor, mainPollutantSensor];
       
-      const unitOfMeasurement = hass.states[aqiSensor.config] ? hass.states[aqiSensor.config].attributes['unit_of_measurement'] : 'AQI';
+      let unitOfMeasurement;
+      if (hass.states[aqiSensor.config]) {
+        unitOfMeasurement = hass.states[aqiSensor.config].attributes['unit_of_measurement']
+      }
+
+      if (!unitOfMeasurement) {
+	unitOfMeasurement = 'AQI'
+      }
 
       const AQIbgColor = {
 
@@ -384,8 +391,7 @@ class AirVisualCard extends HTMLElement {
         if (typeof hass.states[mainPollutantSensor.config] != "undefined") {
           if (typeof hass.states[mainPollutantSensor.config].attributes['pollutant_unit'] != "undefined") {
             pollutantUnit = hass.states[mainPollutantSensor.config].attributes['pollutant_unit'];
-            let mainPollutantState = hass.states[mainPollutantSensor.config].state;
-            mainPollutant = hass.localize("component.sensor.state.airvisual__pollutant_label." + mainPollutantState);
+            mainPollutant = hass.states[mainPollutantSensor.config].state
           } else if (typeof hass.states[mainPollutantSensor.config].attributes['dominentpol'] != "undefined") {
             pollutantUnit = pollutantUnitValue[hass.states[mainPollutantSensor.config].attributes['dominentpol']];
             mainPollutant = mainPollutantValue[hass.states[mainPollutantSensor.config].attributes['dominentpol']];
